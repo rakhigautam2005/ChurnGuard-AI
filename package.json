@@ -1,0 +1,37 @@
+{
+  "name": "churnguard-ai",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "worker": "tsx workers/recovery-worker.ts",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev"
+  },
+  "dependencies": {
+    "next": "14.2.5",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "razorpay": "2.9.4",
+    "bullmq": "5.7.15",
+    "ioredis": "5.4.1",
+    "@prisma/client": "5.16.1",
+    "zod": "3.23.8"
+  },
+  "devDependencies": {
+    "prisma": "5.16.1",
+    "typescript": "5.5.4",
+    "tsx": "4.16.2",
+    "@types/node": "20.14.11",
+    "@types/react": "18.3.3"
+  },
+  "allowScripts": {
+    "@prisma/client@5.16.1": true,
+    "@prisma/engines@5.16.1": true,
+    "esbuild@0.21.5": true,
+    "msgpackr-extract@3.0.4": true,
+    "prisma@5.16.1": true
+  }
+}

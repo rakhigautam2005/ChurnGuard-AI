@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Customer {
+  id            String   @id @default(cuid())
+  razorpayId    String   @unique
+  name          String
+  email         String
+  phone         String?
+  planName      String
+  amount        Int
+  createdAt     DateTime @default(now())
+  events        FailureEvent[]
+}
+
+model FailureEvent {
+  id              String    @id @default(cuid())
+  customer        Customer  @relation(fields: [customerId], references: [id])
+  customerId      String
+  razorpayPaymentId String
+  failureReason   String
+  classifiedAs    String
+  agentDecision   String
+  agentReasoning  String
+  offerType       String
+  status          String    @default("pending")
+  paymentLinkUrl  String?
+  recoveredAt     DateTime?
+  createdAt       DateTime  @default(now())
+}
