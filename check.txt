@@ -1,0 +1,52 @@
+﻿import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+async function getData() {
+  const events = await prisma.failureEvent.findMany({
+    include: { customer: true },
+    orderBy: { createdAt: "desc" },
+    take: 50,
+  });
+
+  const total = events.length;
+  const recovered = events.filter((e) => e.status === "link_sent").length;
+  const revenueSaved = events
+    .filter((e) => e.status === "link_sent")
+    .reduce((sum, e) => sum + (e.customer?.amount || 0), 0);
+
+  return { events, total, recovered, revenueSaved };
+}
+
+function offerLabel(offerType: string) {
+  const labels: Record<string, string> = {
+    immediate_retry: "Immediate retry",
+    delayed_retry_3d: "Delayed retry (3 days)",
+    switch_payment_method: "Switch payment method",
+    manual_review: "Manual review",
+  };
+  return labels[offerType] || offerType;
+}
+
+function statusStyle(status: string) {
+  if (status === "link_sent") return { bg: "#dcfce7", color: "#166534", label: "Recovery link sent" };
+  if (status === "manual_review") return { bg: "#fef3c7", color: "#92400e", label: "Manual review" };
+  return { bg: "#f1f5f9", color: "#475569", label: status };
+}
+
+export default async function DashboardPage() {
+  const { events, total, recovered, revenueSaved } = await getData();
+  const rate = total > 0 ? Math.round((recovered / total) * 100) : 0;
+
+  return (
+    <div style={{ fontFamily: "system-ui, sans-serif", maxWidth: 1000, margin: "0 auto", padding: "32px 24px" }}>
+      <div style={{ marginBottom: 32 }}>
+        <h1 style={{ fontSize: 24, fontWeight: 600, margin: 0 }}>ChurnGuard AI</h1>
+        <p style={{ color: "#64748b", marginTop: 4 }}>Subscription recovery dashboard</p>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 32 }}>
+        <StatCard label="Failed payments" value={total.toString()} />
+        <StatCard label="Recovered" value={recovered.toString()} />
+        <StatCard label="Recovery rate" value={rate + "%"} />
+        <StatCard label="Revenue saved" value={"Rs. " + revenueSaved.toLocaleString("en-IN")}
