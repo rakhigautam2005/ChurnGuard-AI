@@ -11,21 +11,23 @@
     "prisma:migrate": "prisma migrate dev"
   },
   "dependencies": {
+    "@prisma/client": "5.16.1",
+    "bullmq": "5.7.15",
+    "dotenv": "^17.4.2",
+    "ioredis": "5.4.1",
     "next": "14.2.5",
+    "razorpay": "2.9.4",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "razorpay": "2.9.4",
-    "bullmq": "5.7.15",
-    "ioredis": "5.4.1",
-    "@prisma/client": "5.16.1",
+    "twilio": "^6.1.0",
     "zod": "3.23.8"
   },
   "devDependencies": {
-    "prisma": "5.16.1",
-    "typescript": "5.5.4",
-    "tsx": "4.16.2",
     "@types/node": "20.14.11",
-    "@types/react": "18.3.3"
+    "@types/react": "18.3.3",
+    "prisma": "5.16.1",
+    "tsx": "4.16.2",
+    "typescript": "5.5.4"
   },
   "allowScripts": {
     "@prisma/client@5.16.1": true,

@@ -1,8 +1,12 @@
+import * as dotenv from "dotenv";
+dotenv.config({ override: true });
+
 import { Worker } from "bullmq";
 import { connection, RecoveryJobData } from "../lib/queue";
 import { classifyFailure } from "../lib/classifier";
 import { decideRecoveryAction } from "../lib/agent";
 import { createRecoveryPaymentLink } from "../lib/razorpay";
+import { sendWhatsAppRecoveryMessage } from "../lib/whatsapp";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
@@ -57,8 +61,14 @@ const worker = new Worker<RecoveryJobData>(
       },
     });
 
-    // TODO: trigger WhatsApp/SMS send here via WhatsApp Business API,
-    // using decision.customerMessage + paymentLinkUrl
+    if (paymentLinkUrl) {
+      const fullMessage = decision.customerMessage + " " + paymentLinkUrl;
+      await sendWhatsAppRecoveryMessage({
+        message: fullMessage,
+        failureReason: data.errorDescription || data.errorCode || "payment issue",
+        paymentLinkUrl,
+      });
+    }
 
     return { category, offerType: decision.offerType, paymentLinkUrl };
   },
@@ -68,6 +78,7 @@ const worker = new Worker<RecoveryJobData>(
 worker.on("completed", (job, result) => {
   console.log(`Recovered job ${job.id}:`, result);
 });
+
 worker.on("failed", (job, err) => {
   console.error(`Job ${job?.id} failed. Full error below:`);
   console.error(err);
