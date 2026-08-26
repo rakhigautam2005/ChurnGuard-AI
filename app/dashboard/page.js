@@ -3,9 +3,8 @@ export const dynamic = "force-dynamic";
 import { PrismaClient } from "@prisma/client";
 import React from "react";
 
-const prisma = new PrismaClient();
-
 async function getData() {
+  const prisma = new PrismaClient();
   const events = await prisma.failureEvent.findMany({
     include: { customer: true },
     orderBy: { createdAt: "desc" },
@@ -17,6 +16,8 @@ async function getData() {
   const revenueSaved = events
     .filter((e) => e.status === "link_sent")
     .reduce((sum, e) => sum + (e.customer?.amount || 0), 0);
+
+  await prisma.$disconnect();
 
   return { events, total, recovered, revenueSaved };
 }
