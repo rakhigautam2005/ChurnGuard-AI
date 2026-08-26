@@ -96,8 +96,18 @@ function EventRow(event) {
     children.push(
       React.createElement(
         "div",
-        { style: { marginTop: 6, fontSize: 13, color: "#2563eb" }, key: "link" },
-        "Recovery link: " + event.paymentLinkUrl
+        { style: { marginTop: 6, fontSize: 13 }, key: "link" },
+        "Recovery link: ",
+        React.createElement(
+          "a",
+          {
+            href: event.paymentLinkUrl,
+            target: "_blank",
+            rel: "noopener noreferrer",
+            style: { color: "#2563eb", textDecoration: "underline" },
+          },
+          event.paymentLinkUrl
+        )
       )
     );
   }
